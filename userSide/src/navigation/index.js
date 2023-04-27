@@ -7,6 +7,7 @@ import Basket from "../screens/Basket";
 import OrdersScreen from "../screens/OrdersScreen";
 import OrderDetails from "../screens/OrderDetails";
 import Profile from "../screens/ProfileScreen";
+import {useAuthContext} from "../Contexts/AuthContext"
 
 
 import { Foundation, FontAwesome5, MaterialIcons } from "@expo/vector-icons";
@@ -14,9 +15,18 @@ import { Foundation, FontAwesome5, MaterialIcons } from "@expo/vector-icons";
 const Stack = createNativeStackNavigator();
 
 const RootNavigator = () => {
+  const {dbUser} = useAuthContext(); 
+ 
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
+    {console.log("dbUser*********************************************",dbUser) }
+    {dbUser ? (
       <Stack.Screen name="HomeTabs" component={HomeTabs} />
+     ): 
+    ( <Stack.Screen name="Profile" component={Profile}/>)
+    }
+      
+     
     </Stack.Navigator>
   );
 };
