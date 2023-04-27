@@ -5,6 +5,7 @@ import { useNavigation,useRoute } from "@react-navigation/native";
 import { DataStore } from "aws-amplify";
 import { useEffect } from "react";
 import { Dish } from "../../models";
+import { useBasketContext } from "../../Contexts/BasketContext";
 
 import restaurants from "../../../assets/data/restaurants.json";
 import { ActivityIndicator } from "react-native";
@@ -17,6 +18,7 @@ const DishDetailsScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const id = route.params.id;
+  const { addDishToBasket } = useBasketContext();
 
       useEffect(()=>{
         if(id){
@@ -34,6 +36,11 @@ const DishDetailsScreen = () => {
   const onPlus = () => {
     setQuantity(quantity + 1);
   };
+
+  const onAddToBasket = async () =>{
+    await addDishToBasket(dish,quantity)
+    navigation.goBack()
+  }
 
   const getTotal = () => {
     return (dish.price * quantity).toFixed(2);
@@ -66,7 +73,7 @@ const DishDetailsScreen = () => {
       </View>
 
       <Pressable
-        onPress={() => navigation.navigate("Basket")}
+        onPress={onAddToBasket}
         style={styles.button}
       >
         <Text style={styles.buttonText}>

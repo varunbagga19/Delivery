@@ -5,39 +5,75 @@ import { Auth,DataStore } from "aws-amplify";
 import { User } from "../../models";
 import { useAuthContext } from "../../Contexts/AuthContext";
 import '@azure/core-asynciterator-polyfill'; 
+import { useNavigation } from "@react-navigation/native";
 
 
 const Profile = () => { 
-  const [name, setName] = useState("");
-  const [address, setAddress] = useState("");
-  const [lat, setLat] = useState("0");
-  const [lng, setLng] = useState("0");
+  const {dbUser} = useAuthContext();
+  const [name, setName] = useState(dbUser?.name || "");
+  const [address, setAddress] = useState(dbUser?.address || "");
+  const [lat, setLat] = useState(dbUser?.lat+"" || "");
+  const [lng, setLng] = useState(dbUser?.lng+"" || "");
+  const navigation = useNavigation();
 
   const {sub,setDbUser} = useAuthContext();
 
+
   const onSave = async () => {
 
-    if(userExists){
-      await updateUser();
-    }else{
-      await createUser();
+    try{
+     const user = await DataStore.save(
+        new User({
+          "name":name,
+          "address":address,
+          "lat":parseFloat(lat),
+          "lng":parseFloat(lng),
+          "sub":sub,
+      })
+    );
+    setDbUser(user);
+    console.log("user",user);
+    } catch(e){ 
+      Alert.alert("Error",e.message)
     }
+
+    // if(dbUser){
+    //   await updateUser();
+    // }else{
+    //   await createUser();
+    // }
+
+    // navigation.goBack();
+    
   };
+  
+
+  const updateUser = async () =>{
+    const user = await DataStore.save(
+      User.copyOf(dbUser,(updated) => {
+        updated.name = name;
+        updated.address = address;
+        updated.lat = parseFloat(lat);
+        updated.lng = parseFloat(lng);
+
+      })
+    )
+    setDbUser(user);
+  }
 
   const createUser = async () =>{
     try{
       const user = await DataStore.save(
-        new User({ 
-         name,
-         address,
-         lat : parseFloat(lat),
-         lng : parseFloat(lng),
-         sub,        
-        })  
-     );    
-     console.log("user Profile screen*****************************");
-     console.log(user);
-     setDbUser(user);
+        new User({
+        "name": "Lorem ipsum dolor sit amet",
+        "address": "Lorem ipsum dolor sit amet",
+        "lat": 123.45,
+        "lng": 123.45,
+        "Orders": [],
+        "Baskets": [],
+        "sub": "Lorem ipsum dolor sit amet"
+      })
+    );
     } catch(e){ 
       Alert.alert("Error",e.message)
     }

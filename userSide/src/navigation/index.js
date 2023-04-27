@@ -19,7 +19,7 @@ const RootNavigator = () => {
  
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-    {console.log("dbUser*********************************************",dbUser) }
+    {/* {console.log("dbUser*********************************************",dbUser) } */}
     {dbUser ? (
       <Stack.Screen name="HomeTabs" component={HomeTabs} />
      ): 

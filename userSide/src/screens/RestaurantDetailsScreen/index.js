@@ -10,6 +10,7 @@ import { DataStore } from "aws-amplify";
 import { Dish } from "../../models";
 import { Restaurant } from "../../models";
 import "@azure/core-asynciterator-polyfill"; 
+import { useBasketContext } from "../../Contexts/BasketContext";
 
 
 const restaurant = restaurants[0];
@@ -20,7 +21,7 @@ const RestaurantDetailsPage = () => {
   const id = route.params?.id;
   // console.warn(id);
 
-
+  const{setRestaurant:setBasketRestaurant} = useBasketContext();
   const[restaurant,setRestaurants] = useState(null);
   const[dishes,setDishes] = useState([]);
 
@@ -30,11 +31,17 @@ const RestaurantDetailsPage = () => {
     if(!id){
       return;
     }
+    setBasketRestaurant(null);
        DataStore.query(Restaurant,id).then(setRestaurants);
 
        DataStore.query(Dish , (dish) => dish.restaurantID.eq(id) ).then(setDishes);
 
   },[id]);
+
+
+  useEffect(()=>{
+    setBasketRestaurant(restaurant);
+  },[restaurant])
   console.log("restaurant");
   console.log(restaurant);
   console.log("dishes");
